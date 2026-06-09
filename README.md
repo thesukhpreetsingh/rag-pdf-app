@@ -1,7 +1,7 @@
 # RAG PDF App
 
 ### Phase 1
-* Simple Front end- Next.js based
+* Simple Front end- React.js based
 * Embeddings
 * Chunking
 * RAG
