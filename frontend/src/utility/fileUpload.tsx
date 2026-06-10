@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState,useRef } from 'react'
 
 
 function FileUpload() {
-  const [file, setFile] = useState<File | null>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -18,11 +19,15 @@ function FileUpload() {
 
     try {
         console.log(import.meta.env.VITE_BACKEND_URL+"/upload")
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload`, {
-        method: 'POST',
-        body: formData,
-      })
-      console.log('Upload successful:', response)
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload`, {
+            method: 'POST',
+            body: formData,
+        })
+        console.log('Upload successful:', response)
+        setFile(null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     } catch (error) {
       console.error('Upload failed:', error)
     }
@@ -30,7 +35,7 @@ function FileUpload() {
 
   return (
     <div>
-      <input type="file" onChange={handleFileChange} accept=".pdf, .doc, .docx" />
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf, .doc, .docx" />
       {file && <p>Selected: {file.name} of size {file.size}</p>}
       <button onClick={handleUpload}>Upload</button>
     </div>
