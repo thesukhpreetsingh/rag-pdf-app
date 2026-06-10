@@ -17,7 +17,7 @@ function FileUpload() {
     formData.append('file', file)
 
     try {
-        // console.log(import.meta.env.VITE_BACKEND_URL)
+        console.log(import.meta.env.VITE_BACKEND_URL+"/upload")
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload`, {
         method: 'POST',
         body: formData,
@@ -30,8 +30,8 @@ function FileUpload() {
 
   return (
     <div>
-      <input type="file" onChange={handleFileChange} />
-      {file && <p>Selected: {file.name}</p>}
+      <input type="file" onChange={handleFileChange} accept=".pdf, .doc, .docx" />
+      {file && <p>Selected: {file.name} of size {file.size}</p>}
       <button onClick={handleUpload}>Upload</button>
     </div>
   )
