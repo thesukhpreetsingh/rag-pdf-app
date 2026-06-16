@@ -10,11 +10,12 @@ const __dirname = path.dirname(__filename);
 import multer from "multer";
 
 import { PDFParse } from "pdf-parse";
+import { error } from "console";
 
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, 'public/uploads/documents'),
+  destination: path.join(__dirname, '../public/uploads/documents'),
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`)
+    cb(null, `${Date.now()}-${file.originalname.replaceAll(" ","")}`)
   }
 })
 
@@ -50,8 +51,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/upload', upload.single('file'), function(req, res, next) {
-  console.log(req.body.file)
+  // console.log(req.file)
+  if(!req.file) return res.json({error:true, message:"No files uploaded"})
+  let file = req.file.originalname;
 
-  return res.json({status:200, message :"Ok"})
+  return res.json({status:200, message :"Ok. Hoi", file:file})
 });
 export default router
