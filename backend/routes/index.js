@@ -9,8 +9,7 @@ const __dirname = path.dirname(__filename);
 
 import multer from "multer";
 
-import { PDFParse } from "pdf-parse";
-// import { error } from "console";
+// import { PDFParse } from "pdf-parse";
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, '../public/uploads/documents'),
