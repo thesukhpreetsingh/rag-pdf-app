@@ -24,7 +24,7 @@ function FileUpload() {
             method: 'POST',
             body: formData,
         })
-        let resp = await response.json()
+        const resp = await response.json()
         // console.log('Upload successful:', resp)
         alert(`${resp.file} uploaded sucessfully`)
         setFile(null)
