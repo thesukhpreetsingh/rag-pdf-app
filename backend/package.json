@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "echo 'No build step required for Express backend'"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
