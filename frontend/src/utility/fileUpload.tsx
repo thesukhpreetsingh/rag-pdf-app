@@ -1,4 +1,5 @@
-import { useState,useRef } from 'react'
+import { useState, useRef } from 'react'
+import './fileUpload.css'
 
 
 function FileUpload() {
@@ -23,7 +24,9 @@ function FileUpload() {
             method: 'POST',
             body: formData,
         })
-        console.log('Upload successful:', response)
+        const resp = await response.json()
+        // console.log('Upload successful:', resp)
+        alert(`${resp.file} uploaded sucessfully`)
         setFile(null)
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -34,10 +37,26 @@ function FileUpload() {
   }
 
   return (
-    <div>
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf, .doc, .docx" />
-      {file && <p>Selected: {file.name} of size {file.size}</p>}
-      <button onClick={handleUpload}>Upload</button>
+    <div className="file-upload-container">
+      <h2 className="file-upload-title">File Upload</h2>
+      
+      <form onSubmit={(e) => { e.preventDefault(); handleUpload() }} className="upload-form">
+        <div className="file-input-wrapper">
+          <label htmlFor="fileInput" className="custom-file-label">
+            <span className="file-icon">📄</span>
+            {!file ? "Select a file to upload (PDF, DOC, DOCX)" : `Selected: ${file.name}`}
+          </label>
+          <input 
+            type="file" 
+            id="fileInput" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            accept=".pdf, .doc, .docx" 
+          />
+        </div>
+
+        <button type="submit" className="upload-button">Upload</button>
+      </form>
     </div>
   )
 }
