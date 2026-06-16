@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 import multer from "multer";
 
 import { PDFParse } from "pdf-parse";
-import { error } from "console";
+// import { error } from "console";
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, '../public/uploads/documents'),
@@ -46,11 +46,11 @@ const upload = multer({
 
 
 
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/upload', upload.single('file'), function(req, res, next) {
+router.post('/upload', upload.single('file'), function(req, res) {
   // console.log(req.file)
   if(!req.file) return res.json({error:true, message:"No files uploaded"})
   let file = req.file.originalname;
