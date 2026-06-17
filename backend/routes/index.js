@@ -1,15 +1,8 @@
-import express from "express"
-const router = express.Router()
-
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-import multer from "multer";
-
-// import { PDFParse } from "pdf-parse";
+const express = require("express");
+const router = express.Router();
+const path = require('path');
+const multer = require("multer");
+const uploadedFile = require("../models/uploadedFile");
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, '../public/uploads/documents'),
@@ -21,7 +14,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: { 
-    fileSize: 5 * 1024 * 1024 // 10MB limit
+    fileSize: 5 * 1024 * 1024 // 5MB limit
   },
   fileFilter: (req, file, cb) => {
     const allowedMimes = [
@@ -43,17 +36,37 @@ const upload = multer({
   }
 })
 
-
-
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/upload', upload.single('file'), function(req, res) {
-  // console.log(req.file)
-  if(!req.file) return res.json({error:true, message:"No files uploaded"})
-  let file = req.file.originalname;
+router.post('/upload', upload.single('file'), async function(req, res) {
+  try {
+    if(!req.file) return res.json({error:true, message:"No files uploaded"})
+    
+    // Save to MongoDB
+    console.log(req.file)
+    const newFile = new uploadedFile({
+      name: req.file.originalname,
+      filename:req.file.fileName,
+      statusHistory: [{
+        status: "Uploaded",
+        updatedAt: new Date()
+      }],
+      path : `/uploads/documents/${req.file.filename}`
+    });
+    
+    await newFile.save();
 
-  return res.json({status:200, message :"Ok. Hoi", file:file})
+    return res.json({
+      status: 200, 
+      message: "File uploaded and saved to database successfully", 
+      file: req.file.originalname
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return res.status(500).json({ error: true, message: "Internal server error" });
+  }
 });
-export default router
+
+module.exports = router;
