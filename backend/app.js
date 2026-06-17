@@ -1,12 +1,13 @@
 require('dotenv').config()
 var express = require('express');
+const connectDB = require("./config/db.js")
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var cors = require("cors")
 
-var indexRouter = require('./routes/index').default;
+var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
 
 var app = express();
@@ -16,6 +17,16 @@ app.use(cors({
   ],
   credentials: true
 }));
+
+// using db connection
+(async () => {
+  try {
+    await connectDB();
+    console.log("Database connected");
+  } catch (err) {
+    console.error("Database connection failed", err);
+  }
+})();
 
 app.use(logger('dev'));
 app.use(express.json());
