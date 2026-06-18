@@ -1,6 +1,5 @@
 // workers/pdf.worker.js
 const { PDFParse } = require('pdf-parse');
-const fs = require("fs").promises;
 
 const { Worker, Queue } = require("bullmq");
 
@@ -15,7 +14,7 @@ const pdfQueue = new Queue("pdf-processing", { connection, concurrency:1 });
 
 const pdfChunkingQueue = new Queue("pdf-chunking", { connection, concurrency:1 });
 
-const worker = new Worker(
+new Worker(
   "pdf-processing",
   async (job) => {
     console.log(
