@@ -34,6 +34,23 @@ services:
       redis:
         condition: service_healthy
 
+  pdf-worker:
+    build: ./backend
+    container_name: rag-pdf-worker
+    command: npm run worker:pdf
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - uploads:/app/uploads
+
+    env_file:
+      - ./backend/.env
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
   mongodb:
     image: mongo:8
     container_name: rag-mongodb

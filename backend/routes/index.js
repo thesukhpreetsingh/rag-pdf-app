@@ -4,6 +4,10 @@ const path = require('path');
 const multer = require("multer");
 const uploadedFile = require("../models/uploadedFile");
 
+const {Queue} =  require('bullmq');
+// Queue.setGlobalConcurrency(4);
+
+
 const storage = multer.diskStorage({
   destination: path.join(__dirname, '../public/uploads/documents'),
   filename: (req, file, cb) => {
@@ -36,6 +40,13 @@ const upload = multer({
   }
 })
 
+const pdfParserQueue = new Queue("pdf-processing", {
+  connection: {
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
+  },
+});
+
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
@@ -57,6 +68,16 @@ router.post('/upload', upload.single('file'), async function(req, res) {
     });
     
     await newFile.save();
+
+    let parseJob = await pdfParserQueue.add("pdfParserQueue",{
+        filename:req.file.filename,
+        path : `/uploads/documents/${req.file.filename}`
+    },{
+      attempts: 3,
+      removeOnComplete: true,
+      removeOnFail: false,
+    })
+    console.log(`${parseJob.id} successfully added => for ${req.file.filename}`)
 
     return res.json({
       status: 200, 
