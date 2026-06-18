@@ -5,17 +5,21 @@
   "scripts": {
     "start": "node ./bin/www",
     "lint": "eslint .",
-    "build": "echo 'No build step required for Express backend'"
+    "build": "echo 'No build step required for Express backend'",
+    "worker:pdf": "node workers/pdfParser.worker.js"
   },
   "dependencies": {
+    "bullmq": "^5.78.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.6",
     "debug": "~2.6.9",
     "dotenv": "^17.4.2",
     "express": "^4.22.2",
+    "fs": "^0.0.1-security",
     "mongoose": "^9.7.0",
     "morgan": "^1.11.0",
-    "multer": "^2.1.1"
+    "multer": "^2.1.1",
+    "pdf-parse": "^2.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
