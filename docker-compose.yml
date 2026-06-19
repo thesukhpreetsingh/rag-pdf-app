@@ -51,6 +51,23 @@ services:
       redis:
         condition: service_healthy
 
+  chunk-worker:
+    build: ./backend
+    container_name: rag-pdf-worker_chunking
+    command: npm run worker:pdf_chunk
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+    env_file:
+      - ./backend/.env
+
+    depends_on:
+      redis:
+        condition: service_healthy
+      # - ollama
+
   mongodb:
     image: mongo:8
     container_name: rag-mongodb
@@ -90,7 +107,16 @@ services:
     depends_on:
       - redis
 
+  # ollama:
+  #   image: ollama/ollama
+  #   container_name: ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+
 volumes:
   mongodb_data:
   redis_data:
   uploads:
+  # ollama_data:

@@ -2,21 +2,19 @@
 const { PDFParse } = require('pdf-parse');
 
 const { Worker, Queue } = require("bullmq");
+const { connection } = require('../config/redis');
+
 
 console.log("pdfParser worker initialized")
 
-const connection = {
-    host: process.env.REDIS_HOST,
-    port: Number(process.env.REDIS_PORT),
-}
+const pdfQueue = new Queue("pdf-processing", { connection });
 
-const pdfQueue = new Queue("pdf-processing", { connection, concurrency:1 });
-
-const pdfChunkingQueue = new Queue("pdf-chunking", { connection, concurrency:1 });
+const pdfChunkingQueue = new Queue("pdf-chunking", { connection });
 
 new Worker(
   "pdf-processing",
   async (job) => {
+    console.log("======================================================== >")
     console.log(
       `Processing Job ${job.id} and ${job.data.filename} at ${new Date()}`
     );
@@ -43,11 +41,15 @@ new Worker(
                 removeOnFail: false,
               })
               console.log(`${parseJob.id} successfully added => for ${job.data.filename}`)
+              console.log("======================================================== >")
+              console.log(" ")
 
 
             }else console.log("File Not Parsed")
         } catch (error) {
             console.error(`Error processing PDF job ${job.id}:`, error);
+            console.log("======================================================== >")
+            console.log(" ")
             throw error;
         }
     }
@@ -61,7 +63,6 @@ new Worker(
     //   status: "success",
     // };
   },
-
   {
     connection,
     concurrency: 1,
