@@ -50,20 +50,20 @@ new Worker(
 
             console.log(`2: Chunking done ... with size ${chunks.length}`);
 
-            if(result && result.text.length > 0) {
-              console.log("4: Sending it to chunk queue")
-              let parseJob = await pdfChunkingQueue.add("pdfChunkingQueue",{
-                  filename: job.data.filename,
-                  data : result.text
-              },{
-                attempts: 3,
-                removeOnComplete: true,
-                removeOnFail: false,
-              })
-              console.log(`${parseJob.id} successfully added => for ${job.data.filename}`)
+            if(chunks.length > 0) {
+              console.log("4: Sending it to Further queue")
+            //   let parseJob = await pdfChunkingQueue.add("pdfChunkingQueue",{
+            //       filename: job.data.filename,
+            //       data : result.text
+            //   },{
+            //     attempts: 3,
+            //     removeOnComplete: true,
+            //     removeOnFail: false,
+            //   })
+            //   console.log(`${parseJob.id} successfully added => for ${job.data.filename}`)
 
 
-            }else console.log("File Not Parsed")
+            }else console.log("File Not chunked")
         } catch (error) {
             console.error(`Error processing PDF job ${job.id}:`, error);
             throw error;
