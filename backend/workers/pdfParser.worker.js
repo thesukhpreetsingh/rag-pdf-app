@@ -16,7 +16,7 @@ new Worker(
   async (job) => {
     console.log("======================================================== >")
     console.log(
-      `Processing Job ${job.id} and ${job.data.filename} at ${new Date()}`
+      `Processing Job ${job.id} for file ${job.data.filename} and _id ${job.data._id} on ${new Date()} \n`
     );
     // console.log(job.data)
     console.log(process.env.PDF_PARSER_URL + job.data.path)
@@ -30,11 +30,24 @@ new Worker(
             console.log("2: Fetching and parsing complete")
             const result = await data.getText();
             console.log("3 : Extraction of data from parsed pdf complete = with length => "+result.text.length)
+            
+            // later on clean for other aspects like header and footer as well.
+            console.log("Cleaning data")
+            result.text = result.text.replace(
+              /--\s*\d+\s*of\s*\d+\s*--/gi,
+              ""
+            );
+            result.text = result.text.replace(/\n{3,}/g, "\n\n");
+            console.log("Data Cleaned")
+            // console.log(result);
+
+
             if(result && result.text.length > 0) {
               console.log("4: Sending it to chunk queue")
               let parseJob = await pdfChunkingQueue.add("pdfChunkingQueue",{
                   filename: job.data.filename,
-                  data : result.text
+                  data : result.text,
+                  _id: job.data._id
               },{
                 attempts: 3,
                 removeOnComplete: true,

@@ -7,7 +7,7 @@ console.log("pdfchunking worker initialized")
 
 const splitter = new RecursiveCharacterTextSplitter(
     { 
-        chunkSize: 750,
+        chunkSize: 1000,
         chunkOverlap: 150,
         separators: [
             "\n\n",
@@ -22,16 +22,15 @@ const splitter = new RecursiveCharacterTextSplitter(
     })
 
 const pdfChunkingQueue = new Queue("pdf-chunking", { connection });
-
-
-// OLLAMA_CLOUD_KEY
+const chunkEmbedingQueue = new Queue("pdf-chunk-embedding", { connection });
 
 
 new Worker(
   "pdf-chunking",
   async (job) => {
     console.log(
-      `Processing Job ${job.id} and ${job.data.filename} at ${new Date()}`
+      `=================================================================== > \n
+      Processing Job ${job.id} and ${job.data.filename} and _id ${job.data._id} on ${new Date()} \n`
     );
     console.log(job.data.data.length)
 
@@ -51,21 +50,22 @@ new Worker(
             console.log(`2: Chunking done ... with size ${chunks.length}`);
 
             if(chunks.length > 0) {
-              console.log("4: Sending it to Further queue")
-            //   let parseJob = await pdfChunkingQueue.add("pdfChunkingQueue",{
-            //       filename: job.data.filename,
-            //       data : result.text
-            //   },{
-            //     attempts: 3,
-            //     removeOnComplete: true,
-            //     removeOnFail: false,
-            //   })
-            //   console.log(`${parseJob.id} successfully added => for ${job.data.filename}`)
+              console.log("4: Sending it to Further queue for embedding")
+              let embedJob = await chunkEmbedingQueue.add("chunkEmbedingQueue",{
+                  filename: job.data.filename,
+                  chunks : chunks,
+                  _id: job.data._id
+              },{
+                attempts: 3,
+                removeOnComplete: true,
+                removeOnFail: false,
+              })
+              console.log(`${embedJob.id} successfully added to embeddings queue => for ${job.data.filename}`)
 
-
+                console.log(`===================================================================\n `)
             }else console.log("File Not chunked")
         } catch (error) {
-            console.error(`Error processing PDF job ${job.id}:`, error);
+            console.error(`Error chunking PDF job ${job.id}:`, error);
             throw error;
         }
     }

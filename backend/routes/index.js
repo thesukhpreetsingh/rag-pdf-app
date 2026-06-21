@@ -67,11 +67,13 @@ router.post('/upload', upload.single('file'), async function(req, res) {
       path : `/uploads/documents/${req.file.filename}`
     });
     
-    await newFile.save();
+    let id = await newFile.save();
+    console.log
 
     let parseJob = await pdfParserQueue.add("pdfParserQueue",{
         filename:req.file.filename,
-        path : `/uploads/documents/${req.file.filename}`
+        path : `/uploads/documents/${req.file.filename}`,
+        _id:id._id
     },{
       attempts: 3,
       removeOnComplete: true,
