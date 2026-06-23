@@ -31,3 +31,10 @@ I have setup both Ollama Configurations
 
 You Can always have NVM (for windows) n(for linux or mac) installed for node version management
 [NVM](https://github.com/coreybutler/nvm-windows/releases)
+
+
+##### To Access front end ==> `http://localhost:3000/`
+
+##### To Access Backend ==> `http://localhost:5000/`
+
+##### To Access redis to check BullMQ Queues data ==> `http://localhost:8081/`
