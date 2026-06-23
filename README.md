@@ -62,6 +62,7 @@ QDRANT_SIZE = 768 # dimensions of your embedding model. It should be specific to
 
 ##### Please choose OLLAMA configuration wisely or else it will download Ollama image and model which can account to 4gb worth of extra download
 
+
 #### For front end .env
 ```
 VITE_BACKEND_URL = http://localhost:5000
